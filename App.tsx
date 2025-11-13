@@ -118,17 +118,30 @@ const App: React.FC = () => {
             });
 
             const generatedJsonText = response.text;
-            const parsedTutorial = JSON.parse(generatedJsonText) as Omit<Tutorial, 'installationSteps'> & { installationSteps: Array<Omit<Tutorial['installationSteps'][0], 'imageUrl'>> };
+            const parsedJson = JSON.parse(generatedJsonText);
             
-            const tutorialWithImagePlaceholders: Tutorial = {
-                ...parsedTutorial,
-                installationSteps: parsedTutorial.installationSteps.map(step => ({
-                    ...step,
+            const tutorialWithDefaults: Tutorial = {
+                equipment: parsedJson.equipment || { name: 'Equipamento', model: 'Modelo', application: 'Aplicação' },
+                toolsAndItems: {
+                    tools: parsedJson.toolsAndItems?.tools || [],
+                    items: parsedJson.toolsAndItems?.items || [],
+                },
+                installationSteps: (parsedJson.installationSteps || []).map((step: any, index: number) => ({
+                    id: step.id || index + 1,
+                    description: step.description || 'Descrição do passo ausente.',
                     imageUrl: null,
                 })),
+                safetyPrecautions: parsedJson.safetyPrecautions || [],
+                testingProcedures: {
+                    title: parsedJson.testingProcedures?.title || 'Procedimentos de Teste',
+                    steps: parsedJson.testingProcedures?.steps || [],
+                },
+                resultsInterpretation: parsedJson.resultsInterpretation || [],
+                finalRecommendations: parsedJson.finalRecommendations || [],
+                faq: parsedJson.faq || [],
             };
 
-            setTutorial(tutorialWithImagePlaceholders);
+            setTutorial(tutorialWithDefaults);
 
         } catch (e: any) {
             console.error(e);
@@ -145,6 +158,18 @@ const App: React.FC = () => {
                 ...prevTutorial,
                 installationSteps: prevTutorial.installationSteps.map(step =>
                     step.id === stepId ? { ...step, imageUrl } : step
+                ),
+            };
+        });
+    };
+
+    const handleUpdateStepDescription = (stepId: number, newDescription: string) => {
+        setTutorial(prevTutorial => {
+            if (!prevTutorial) return null;
+            return {
+                ...prevTutorial,
+                installationSteps: prevTutorial.installationSteps.map(step =>
+                    step.id === stepId ? { ...step, description: newDescription } : step
                 ),
             };
         });
@@ -205,7 +230,7 @@ const App: React.FC = () => {
             console.error("Erro ao exportar para PDF:", e);
             setError("Falha ao exportar o PDF. Por favor, tente novamente.");
         }
-    }, [tutorial]);
+    }, []);
 
     return (
         <div className="bg-gray-50 dark:bg-gray-900 min-h-screen font-sans">
@@ -237,7 +262,8 @@ const App: React.FC = () => {
                     <div className="mt-12">
                         <TutorialDisplay 
                             tutorial={tutorial} 
-                            onUpdateStepImage={handleUpdateStepImage} 
+                            onUpdateStepImage={handleUpdateStepImage}
+                            onUpdateStepDescription={handleUpdateStepDescription} 
                             onExport={exportToPdf} 
                         />
                     </div>
