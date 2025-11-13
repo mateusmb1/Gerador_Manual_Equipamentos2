@@ -51,7 +51,7 @@ export const StepItem: React.FC<StepItemProps> = ({ step, stepNumber, onUpdateIm
 
     return (
         <div className="flex flex-col md:flex-row items-start gap-8 border-b border-gray-200 dark:border-gray-700 pb-8 last:border-b-0 last:pb-0">
-            <div className="flex-shrink-0 font-bold text-4xl text-blue-500 bg-blue-100 dark:bg-blue-900/50 rounded-full w-16 h-16 flex items-center justify-center">
+            <div className="step-number-circle flex-shrink-0 font-bold text-4xl text-blue-500 bg-blue-100 dark:bg-blue-900/50 rounded-full w-16 h-16 flex items-center justify-center">
                 {stepNumber}
             </div>
             <div className="flex-grow">
@@ -73,9 +73,9 @@ export const StepItem: React.FC<StepItemProps> = ({ step, stepNumber, onUpdateIm
                         </div>
                     </div>
                 ) : (
-                    <div className="group relative">
+                    <div className="group relative no-print">
                         <p className="text-lg leading-relaxed">{step.description}</p>
-                        <div className="no-print absolute -top-2 -right-2 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div className="absolute -top-2 -right-2 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                             <button
                                 onClick={() => onAddStep(step.id)}
                                 className="bg-white dark:bg-gray-700 p-2 rounded-full shadow-md hover:bg-gray-100 dark:hover:bg-gray-600"
@@ -107,7 +107,7 @@ export const StepItem: React.FC<StepItemProps> = ({ step, stepNumber, onUpdateIm
                         </div>
                     </div>
                 )}
-                 <p className={`text-lg leading-relaxed print-only ${isEditing ? 'block' : 'hidden'}`}>{step.description}</p>
+                 <p className="text-lg leading-relaxed print-only">{step.description}</p>
             </div>
             <div className="w-full md:w-64 flex-shrink-0">
                 <input

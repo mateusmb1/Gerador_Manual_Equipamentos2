@@ -19,7 +19,7 @@ interface TutorialDisplayProps {
 
 const Section: React.FC<{ title: string; children: React.ReactNode }> = ({ title, children }) => (
     <section className="mb-10 page-break">
-        <h2 className="text-3xl font-bold text-gray-800 dark:text-white border-b-2 border-blue-500 pb-2 mb-6">{title}</h2>
+        <h2 className="section-title text-3xl font-bold text-gray-800 dark:text-white border-b-2 border-blue-500 pb-2 mb-6">{title}</h2>
         <div className="text-gray-700 dark:text-gray-300 space-y-4 text-lg">
             {children}
         </div>

@@ -61,13 +61,11 @@ export const EditableListItem: React.FC<EditableListItemProps> = ({ item, listTy
                         </div>
                     </div>
                 ) : (
-                    <div>
-                         <p className="print-only" style={{ display: 'none' }}>{item.text}</p>
-                         <p className="no-print">{item.text}</p>
-                    </div>
-                   
+                    <p className="no-print">{item.text}</p>
                 )}
-                 {item.imageUrl && (
+                <p className="print-only">{item.text}</p>
+
+                {item.imageUrl && (
                     <img 
                         src={item.imageUrl} 
                         alt={`Imagem para ${item.text}`} 

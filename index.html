@@ -32,6 +32,63 @@
       .page-break {
         page-break-after: always;
       }
+
+      /* Styles for PDF Export via html2canvas */
+      .pdf-export-mode #pdf-content {
+          background-color: #ffffff !important;
+          box-shadow: none !important;
+          color: #212529 !important; /* Dark text */
+      }
+      .pdf-export-mode * {
+        border-color: #dee2e6 !important;
+      }
+      .pdf-export-mode .dark\:text-white,
+      .pdf-export-mode .dark\:text-gray-200,
+      .pdf-export-mode .dark\:text-gray-300,
+      .pdf-export-mode .dark\:text-gray-400,
+      .pdf-export-mode .text-gray-600,
+      .pdf-export-mode .text-gray-700,
+      .pdf-export-mode .text-gray-800,
+      .pdf-export-mode .text-gray-900 {
+          color: #212529 !important;
+      }
+      .pdf-export-mode .dark\:bg-gray-800,
+      .pdf-export-mode .dark\:bg-gray-700,
+      .pdf-export-mode .dark\:bg-gray-700\/50,
+      .pdf-export-mode .dark\:bg-gray-900\/50,
+      .pdf-export-mode .dark\:bg-yellow-900\/30,
+      .pdf-export-mode .dark\:bg-blue-900\/50 {
+          background-color: transparent !important;
+      }
+      .pdf-export-mode .step-number-circle {
+          background-color: #dbeafe !important;
+          color: #3b82f6 !important;
+      }
+      .pdf-export-mode .section-title {
+          border-color: #3b82f6 !important;
+      }
+      .pdf-export-mode .text-blue-600,
+      .pdf-export-mode .dark\:text-blue-400 {
+          color: #2563eb !important;
+      }
+      .pdf-export-mode .text-blue-500 {
+          color: #3b82f6 !important;
+      }
+      .pdf-export-mode .bg-yellow-100 {
+          background-color: #fffbeb !important;
+      }
+      .pdf-export-mode .text-yellow-500 {
+          color: #f59e0b !important;
+      }
+      .pdf-export-mode .no-print,
+      .pdf-export-mode .group:hover .no-print,
+      .pdf-export-mode .group:hover .opacity-0 {
+          display: none !important;
+          opacity: 0 !important;
+      }
+      .pdf-export-mode .print-only {
+          display: block !important;
+      }
     </style>
 <script type="importmap">
 {

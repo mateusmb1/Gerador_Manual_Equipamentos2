@@ -282,8 +282,11 @@ const App: React.FC = () => {
             return;
         }
 
-        const originalBackgroundColor = content.style.backgroundColor;
-        content.style.backgroundColor = 'white';
+        const rootEl = document.getElementById('root');
+        rootEl?.classList.add('pdf-export-mode');
+
+        // Allow styles to apply before rendering canvas
+        await new Promise(resolve => setTimeout(resolve, 100));
         
         try {
             const canvas = await html2canvas(content, {
@@ -291,8 +294,6 @@ const App: React.FC = () => {
                 useCORS: true,
                 backgroundColor: '#ffffff'
             });
-
-            content.style.backgroundColor = originalBackgroundColor;
 
             const imgData = canvas.toDataURL('image/png');
             const { jsPDF } = jspdf;
@@ -329,6 +330,8 @@ const App: React.FC = () => {
         } catch (e: any) {
             console.error("Erro ao exportar para PDF:", e);
             setError("Falha ao exportar o PDF. Por favor, tente novamente.");
+        } finally {
+            rootEl?.classList.remove('pdf-export-mode');
         }
     }, []);
 
