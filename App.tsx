@@ -1,7 +1,7 @@
 
 import React, { useState, useCallback } from 'react';
 import { GoogleGenAI, Type } from "@google/genai";
-import type { Tutorial } from './types';
+import type { Tutorial, Step, EditableItem } from './types';
 import { FileUpload } from './components/FileUpload';
 import { TutorialDisplay } from './components/TutorialDisplay';
 import { LoadingSpinner } from './components/LoadingSpinner';
@@ -120,11 +120,20 @@ const App: React.FC = () => {
             const generatedJsonText = response.text;
             const parsedJson = JSON.parse(generatedJsonText);
             
+            const toolsAndItems = parsedJson.toolsAndItems || { tools: [], items: [] };
             const tutorialWithDefaults: Tutorial = {
                 equipment: parsedJson.equipment || { name: 'Equipamento', model: 'Modelo', application: 'Aplicação' },
                 toolsAndItems: {
-                    tools: parsedJson.toolsAndItems?.tools || [],
-                    items: parsedJson.toolsAndItems?.items || [],
+                    tools: (toolsAndItems.tools || []).map((text: string, index: number) => ({
+                        id: index + 1,
+                        text: text,
+                        imageUrl: null,
+                    })),
+                    items: (toolsAndItems.items || []).map((text: string, index: number) => ({
+                        id: 1000 + index + 1, // Use a different base to avoid ID collision
+                        text: text,
+                        imageUrl: null,
+                    })),
                 },
                 installationSteps: (parsedJson.installationSteps || []).map((step: any, index: number) => ({
                     id: step.id || index + 1,
@@ -174,7 +183,98 @@ const App: React.FC = () => {
             };
         });
     };
+
+    const handleAddStep = (afterStepId: number) => {
+        setTutorial(prevTutorial => {
+            if (!prevTutorial) return null;
+
+            const steps = prevTutorial.installationSteps;
+            const insertIndex = steps.findIndex(step => step.id === afterStepId);
+            if (insertIndex === -1) return prevTutorial;
+
+            const maxId = Math.max(0, ...steps.map(s => s.id));
+            const newStep: Step = {
+                id: maxId + 1,
+                description: 'Adicione a descrição para este novo passo.',
+                imageUrl: null,
+            };
+
+            const newSteps = [
+                ...steps.slice(0, insertIndex + 1),
+                newStep,
+                ...steps.slice(insertIndex + 1)
+            ];
+
+            return {
+                ...prevTutorial,
+                installationSteps: newSteps,
+            };
+        });
+    };
+
+    const handleRemoveStep = (stepIdToRemove: number) => {
+        setTutorial(prevTutorial => {
+            if (!prevTutorial || prevTutorial.installationSteps.length <= 1) {
+                return prevTutorial;
+            }
+
+            const newSteps = prevTutorial.installationSteps.filter(step => step.id !== stepIdToRemove);
+
+            return {
+                ...prevTutorial,
+                installationSteps: newSteps,
+            };
+        });
+    };
     
+    const handleUpdateToolOrItem = (
+        listType: 'tools' | 'items',
+        updater: (items: EditableItem[]) => EditableItem[]
+    ) => {
+        setTutorial(prev => {
+            if (!prev) return null;
+            return {
+                ...prev,
+                toolsAndItems: {
+                    ...prev.toolsAndItems,
+                    [listType]: updater(prev.toolsAndItems[listType]),
+                },
+            };
+        });
+    };
+
+    const handleAddToolOrItem = (listType: 'tools' | 'items') => {
+        handleUpdateToolOrItem(listType, (items) => {
+            const maxId = Math.max(0, ...items.map(i => i.id));
+            const newItem: EditableItem = {
+                id: maxId + 1,
+                text: 'Novo item',
+                imageUrl: null,
+            };
+            return [...items, newItem];
+        });
+    };
+    
+    const handleRemoveToolOrItem = (listType: 'tools' | 'items', idToRemove: number) => {
+        handleUpdateToolOrItem(listType, items => items.filter(item => item.id !== idToRemove));
+    };
+
+    const handleUpdateToolOrItemText = (listType: 'tools' | 'items', idToUpdate: number, newText: string) => {
+        handleUpdateToolOrItem(listType, items =>
+            items.map(item =>
+                item.id === idToUpdate ? { ...item, text: newText } : item
+            )
+        );
+    };
+
+    const handleUpdateToolOrItemImage = (listType: 'tools' | 'items', idToUpdate: number, imageUrl: string) => {
+        handleUpdateToolOrItem(listType, items =>
+            items.map(item =>
+                item.id === idToUpdate ? { ...item, imageUrl } : item
+            )
+        );
+    };
+
     const exportToPdf = useCallback(async () => {
         const content = document.getElementById('pdf-content');
         if (!content) {
@@ -263,8 +363,14 @@ const App: React.FC = () => {
                         <TutorialDisplay 
                             tutorial={tutorial} 
                             onUpdateStepImage={handleUpdateStepImage}
-                            onUpdateStepDescription={handleUpdateStepDescription} 
-                            onExport={exportToPdf} 
+                            onUpdateStepDescription={handleUpdateStepDescription}
+                            onAddStep={handleAddStep}
+                            onRemoveStep={handleRemoveStep}
+                            onExport={exportToPdf}
+                            onAddItem={handleAddToolOrItem}
+                            onRemoveItem={handleRemoveToolOrItem}
+                            onUpdateItemText={handleUpdateToolOrItemText}
+                            onUpdateItemImage={handleUpdateToolOrItemImage}
                         />
                     </div>
                 )}

@@ -2,12 +2,19 @@
 import React from 'react';
 import type { Tutorial } from '../types';
 import { StepItem } from './StepItem';
+import { EditableListItem } from './EditableListItem';
 
 interface TutorialDisplayProps {
     tutorial: Tutorial;
     onUpdateStepImage: (stepId: number, imageUrl: string) => void;
     onUpdateStepDescription: (stepId: number, newDescription: string) => void;
+    onAddStep: (afterStepId: number) => void;
+    onRemoveStep: (stepId: number) => void;
     onExport: () => void;
+    onAddItem: (listType: 'tools' | 'items') => void;
+    onRemoveItem: (listType: 'tools' | 'items', id: number) => void;
+    onUpdateItemText: (listType: 'tools' | 'items', id: number, newText: string) => void;
+    onUpdateItemImage: (listType: 'tools' | 'items', id: number, imageUrl: string) => void;
 }
 
 const Section: React.FC<{ title: string; children: React.ReactNode }> = ({ title, children }) => (
@@ -26,7 +33,18 @@ const ListItem: React.FC<{ children: React.ReactNode }> = ({ children }) => (
     </li>
 );
 
-export const TutorialDisplay: React.FC<TutorialDisplayProps> = ({ tutorial, onUpdateStepImage, onUpdateStepDescription, onExport }) => {
+export const TutorialDisplay: React.FC<TutorialDisplayProps> = ({ 
+    tutorial, 
+    onUpdateStepImage, 
+    onUpdateStepDescription, 
+    onAddStep, 
+    onRemoveStep, 
+    onExport,
+    onAddItem,
+    onRemoveItem,
+    onUpdateItemText,
+    onUpdateItemImage 
+}) => {
     return (
         <div className="w-full max-w-5xl mx-auto">
             <div className="text-center my-8 no-print">
@@ -50,13 +68,43 @@ export const TutorialDisplay: React.FC<TutorialDisplayProps> = ({ tutorial, onUp
                         <div>
                             <h3 className="text-2xl font-semibold mb-4 text-gray-800 dark:text-white">Ferramentas</h3>
                             <ul className="space-y-3">
-                                {(tutorial.toolsAndItems?.tools || []).map((tool, index) => <ListItem key={index}>{tool}</ListItem>)}
+                                {(tutorial.toolsAndItems?.tools || []).map((tool) => (
+                                    <EditableListItem
+                                        key={tool.id}
+                                        item={tool}
+                                        listType="tools"
+                                        onRemove={onRemoveItem}
+                                        onUpdateText={onUpdateItemText}
+                                        onUpdateImage={onUpdateItemImage}
+                                    />
+                                ))}
+                                <li className="no-print mt-2">
+                                    <button onClick={() => onAddItem('tools')} className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-semibold text-sm flex items-center gap-1">
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>
+                                        Adicionar Ferramenta
+                                    </button>
+                                </li>
                             </ul>
                         </div>
                         <div>
                             <h3 className="text-2xl font-semibold mb-4 text-gray-800 dark:text-white">Outros Itens</h3>
                             <ul className="space-y-3">
-                                {(tutorial.toolsAndItems?.items || []).map((item, index) => <ListItem key={index}>{item}</ListItem>)}
+                                {(tutorial.toolsAndItems?.items || []).map((item) => (
+                                     <EditableListItem
+                                        key={item.id}
+                                        item={item}
+                                        listType="items"
+                                        onRemove={onRemoveItem}
+                                        onUpdateText={onUpdateItemText}
+                                        onUpdateImage={onUpdateItemImage}
+                                    />
+                                ))}
+                                <li className="no-print mt-2">
+                                    <button onClick={() => onAddItem('items')} className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-semibold text-sm flex items-center gap-1">
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>
+                                        Adicionar Item
+                                    </button>
+                                </li>
                             </ul>
                         </div>
                     </div>
@@ -64,12 +112,15 @@ export const TutorialDisplay: React.FC<TutorialDisplayProps> = ({ tutorial, onUp
 
                 <Section title="Passos de Instalação">
                     <div className="space-y-12">
-                        {(tutorial.installationSteps || []).map((step) => (
+                        {(tutorial.installationSteps || []).map((step, index) => (
                             <StepItem 
                                 key={step.id} 
                                 step={step} 
+                                stepNumber={index + 1}
                                 onUpdateImage={onUpdateStepImage} 
                                 onUpdateDescription={onUpdateStepDescription}
+                                onAddStep={onAddStep}
+                                onRemoveStep={onRemoveStep}
                             />
                         ))}
                     </div>

@@ -10,6 +10,12 @@ export interface FaqItem {
     answer: string;
 }
 
+export interface EditableItem {
+    id: number;
+    text: string;
+    imageUrl: string | null;
+}
+
 export interface Tutorial {
     equipment: {
         name: string;
@@ -17,8 +23,8 @@ export interface Tutorial {
         application: string;
     };
     toolsAndItems: {
-        tools: string[];
-        items: string[];
+        tools: EditableItem[];
+        items: EditableItem[];
     };
     installationSteps: Step[];
     safetyPrecautions: string[];
