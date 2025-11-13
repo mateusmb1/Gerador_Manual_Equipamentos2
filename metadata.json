@@ -1,0 +1,5 @@
+{
+  "name": "Gerador de Tutorial a partir de Manuais",
+  "description": "Uma aplicação que utiliza IA para transformar manuais técnicos complexos em tutoriais passo a passo, fáceis de entender, com a capacidade de adicionar imagens personalizadas e exportar o resultado como PDF.",
+  "requestFramePermissions": []
+}
